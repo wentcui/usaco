@@ -10,8 +10,8 @@ class clocks {
     static boolean success = false;
 	static int mask = (1 << 27) - 1;
 	static int maskhigh = 0xFB6DB6DB;
-    static BufferedReader f = null;
-    static PrintWriter out = null;
+	static BufferedReader f = null;
+	static PrintWriter out = null;
 	static int[][] map={{0},{1,2,4,5},{1,2,3},{2,3,5,6},{1,4,7},{2,4,5,6,8},{3,6,9},{4,5,7,8},{7,8,9},{5,6,8,9}};
 
 	public static boolean validate(int clock) {
