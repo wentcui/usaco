@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.*;
 
 class clocks {
-    static boolean success = false;
+	static boolean success = false;
 	static int mask = (1 << 27) - 1;
 	static int maskhigh = 0xFB6DB6DB;
 	static BufferedReader f = null;
