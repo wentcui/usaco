@@ -31,6 +31,7 @@ public class castle {
 		Queue<point> q = new LinkedList<point>();
 		int area = 0;
 		q.offer(new point(x, y));
+		areamatrix[x][y] = nr;
 		while(!q.isEmpty()) {
 			point p = q.poll();
 			x = p.x;
@@ -38,20 +39,23 @@ public class castle {
 			
 			area++;
 			int v = matrix[x][y];
-			areamatrix[x][y] = nr;
 			if (v == 15) continue;
 			
 			if ((v & 1) == 0 && areamatrix[x][y - 1] == 0) {
 				q.offer(new point(x, y - 1));
+				areamatrix[x][y - 1] = nr;
 			}
 			if ((v & 2) == 0 && areamatrix[x - 1][y] == 0) {
 				q.offer(new point(x - 1, y));
+				areamatrix[x - 1][y] = nr;
 			}
 			if ((v & 4) == 0 && areamatrix[x][y + 1] == 0) {
 				q.offer(new point(x, y + 1));
+				areamatrix[x][y + 1] = nr;
 			}
 			if ((v & 8) == 0 && areamatrix[x + 1][y] == 0) {
 				q.offer(new point(x + 1, y));
+				areamatrix[x + 1][y] = nr;
 			}
 		}
 		return area;
@@ -69,7 +73,8 @@ public class castle {
 		int row = Integer.parseInt(st.nextToken());
 		int[][] matrix = new int[row][col];
 		int[][] areamatrix = new int[row][col];
-		int[] areamap = new int[2500];
+		int[] areamap = new int[2501];
+		char result = '\0';
 		int area_nr = 0;
 		int max_area = 0;
 		int merge_max_area = 0;
@@ -94,29 +99,40 @@ public class castle {
 		}
 		for(int j = 0; j < col; j++) {
 			for(int i = row - 1; i >= 0; i--) {
-				if (j < col - 1 && areamatrix[i][j] != areamatrix[i][j + 1]) {
-					int newarea = areamap[areamatrix[i][j]] + areamap[areamatrix[i][j + 1]];
-					if (newarea > merge_max_area) {
-						merge_max_area = newarea;
-						walle = new wall(i + 1, j + 1, 'E');
-					}
-				}
 				if (i > 0 && areamatrix[i][j] != areamatrix[i - 1][j]) {
 					int newarea = areamap[areamatrix[i][j]] + areamap[areamatrix[i - 1][j]];
 					if (newarea > merge_max_area) {
 						merge_max_area = newarea;
 						walln = new wall(i + 1, j + 1, 'N');
+						result = 'N';
+					}
+				}
+				if (j < col - 1 && areamatrix[i][j] != areamatrix[i][j + 1]) {
+					int newarea = areamap[areamatrix[i][j]] + areamap[areamatrix[i][j + 1]];
+					if (newarea > merge_max_area) {
+						merge_max_area = newarea;
+						walle = new wall(i + 1, j + 1, 'E');
+						result = 'E';
 					}
 				}
 			}
 		} 
+/*
+		for(int i = 0; i < row; i++) {
+            for(int j = 0; j < col; j++) {
+				System.out.print(areamatrix[i][j] + "\t");
+			}
+			System.out.println();
+		}
+*/
 		out.println(area_nr);
 		out.println(max_area);
 		out.println(merge_max_area);
-		if (walle != null) {
-			out.println(walle.x + " " + walle.y + " " + walle.d);
-		} else
+		if (result == 'N')
 			out.println(walln.x + " " + walln.y + " " + walln.d);
+		else
+			out.println(walle.x + " " + walle.y + " " + walle.d);
+		
 		out.close();
 		System.exit(0);
 	}
