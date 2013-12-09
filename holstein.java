@@ -6,6 +6,7 @@ TASK: holstein
 import java.io.*;
 import java.util.*;
 
+
 class holstein {
 	private static int[] req = null;
 	private static int[][] feeds = null;
