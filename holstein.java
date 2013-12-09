@@ -24,6 +24,14 @@ class holstein {
 		return true;
 	}
 
+    private static boolean cango(int[] cur, int[] feed) {
+		for(int i = 0; i < cur.length; i++) {
+			if (cur[i] < req[i] && feed[i] > 0)
+				return true;
+		}
+		return false;
+    }
+
 	public static void dfs(int[] cur, int curindex, ArrayList<Integer> arr) {
 		if (validate(cur)) {
 			if (arr.size() < minFeedNr) {
@@ -37,7 +45,7 @@ class holstein {
 		if (arr.size() >= minFeedNr)
 			return;
 		int i = 0;
-		for(i = 0; !validate(cur); i++) {
+		for(i = 0; i < 1 && cango(cur, feeds[curindex]); i++) {
 			for(int j = 0; j < types; j++) {
 				cur[j] += feeds[curindex][j];
 			}
