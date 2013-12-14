@@ -77,23 +77,22 @@ void output(char *arr) {
 
 void dfs(char *arr, int curtype, int curcount) {
 	int i = 0;
-	if (curcount > count) {
-		if (validate(arr)) {
-			output(arr);
-			gotOne++;
-		}
-		return;
-	}
-	if (curtype > 4)
-		return;
 
-	for(i = 1; i <= count; i++) {
-		flip(arr, curtype);
-		dfs(arr, curtype + 1, curcount + 1);
+	if ((curcount % 2 == count % 2) && validate(arr)) {
+		printf("curcount: %d, curtype: %d\n", curcount, curtype);
+		output(arr);
+		gotOne++;
 	}
 
-	if (i % 2)
-		flip(arr, curtype);
+	if (curcount >= count || curtype > 4) {
+		return;
+	}
+
+	flip(arr, curtype);
+	printf("flip with type: %d\n", curtype);
+	dfs(arr, curtype + 1, curcount + 1);
+	flip(arr, curtype);
+
 	dfs(arr, curtype + 1, curcount);
 }
 
@@ -128,7 +127,7 @@ main() {
 		fscanf(fin, "%d", &pos);
 	}
 
-	dfs(arr, 1, 1);
+	dfs(arr, 1, 0);
 	if (!gotOne) {
 		fprintf(fout, "IMPOSSIBLE\n");
 	}
