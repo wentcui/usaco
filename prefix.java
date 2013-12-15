@@ -8,14 +8,15 @@ import java.util.*;
 
 class prefix {
 	static boolean strComp(String s, String str, int index) {
-		int last = s.length() - 1;
-		while(last >= 0 && index >= 0 && s.charAt(last) == str.charAt(index)) {
-			last--;
-			index--;
+		int curs = 0;
+		int cur = index;
+		while(curs < s.length() && cur < str.length() && s.charAt(curs) == str.charAt(cur)) {
+			curs++;
+			cur++;
 		}
-		if (last >= 0)
-			return false;
-		return true;
+		if (curs == s.length())
+			return true;
+		return false;
 	}
 	
 	public static void main (String [] args) throws IOException {
@@ -46,46 +47,23 @@ class prefix {
 			line = fin.readLine();
 		}
 
-		boolean[] dp = new boolean[str.length() + 1];
-		dp[0] = true;
-		int start = 0, prevpos;
-		for(int i = 0; i < strlist.size(); i++) {
-			int len = strlist.get(i).length();
-			if (len >= str.length()) continue;
-			String s = str.substring(0, len);
-			if (map.containsKey(s)) {
-				dp[len] = true;
-				if (len > start)
-					start = len;
-			}
-		}
-		if (start == 0) {
-			fout.println(0);
-			fout.close();
-			System.exit(0);
-		}
-		prevpos = start;
-		start++;
-		while(start <= str.length()) {
+		int best = 0;
+		boolean[] visited = new boolean[200001];
+		Stack<Integer> st = new Stack<Integer>();
+		st.push(0);
+		while (!st.empty()) {
+			int cur = st.pop();
+			best = Math.max(best, cur);
 			for(int i = 0; i < strlist.size(); i++) {
 				String s = strlist.get(i);
-				int len = s.length();
-				if (start - len - 1 < 0)
-					continue;
-				if (dp[start - len] && strComp(s, str, start - 1)) {
-					dp[start] = true;
-					prevpos = start;
-					break;
+				int lens = s.length();
+				if (cur + lens < str.length() && !visited[cur + lens] && strComp(s, str, cur)) {
+					st.push(cur + lens);
 				}
 			}
-			if (start - prevpos >= longest) {
-				break;
-			}
-			start++;
 		}
-		fout.println(prevpos);
+		fout.println(best);
 		fout.close();
-
 		System.exit(0);
 	}
 }
