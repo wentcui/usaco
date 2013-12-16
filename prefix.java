@@ -50,15 +50,18 @@ class prefix {
 		int best = 0;
 		boolean[] visited = new boolean[200001];
 		Stack<Integer> st = new Stack<Integer>();
+		Stack<Integer> maxst = new Stack<Integer>();
 		st.push(0);
+		maxst.push(0);
 		while (!st.empty()) {
 			int cur = st.pop();
 			best = Math.max(best, cur);
 			for(int i = 0; i < strlist.size(); i++) {
 				String s = strlist.get(i);
 				int lens = s.length();
-				if (cur + lens < str.length() && !visited[cur + lens] && strComp(s, str, cur)) {
+				if (cur + lens <= str.length() && !visited[cur + lens] && strComp(s, str, cur)) {
 					st.push(cur + lens);
+					visited[cur + lens] = true;
 				}
 			}
 		}
@@ -67,3 +70,4 @@ class prefix {
 		System.exit(0);
 	}
 }
+

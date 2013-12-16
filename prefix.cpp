@@ -26,7 +26,7 @@ int main() {
     while (scanf("%s", t) != -1)
         strncat(s, t, sizeof t);
      
-    stack<int> stk; stk.push(0); v[0] = 1;
+    stack<int> stk; stk.push(0);
      
     while (stk.size()) {
         int from = stk.top(); stk.pop();
