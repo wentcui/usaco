@@ -11,32 +11,38 @@ TASK: concom
 int n;
 int **shares;
 int **control;
+int *candidates;
+int candidates_nr = 0;
 
 void find(int com) {
-	int can, i, j;
-	int *candidates = (int *)malloc(sizeof(int) * (n + 1));
-	memset(candidates, 0, sizeof(int) * (n + 1));
-	memcpy(candidates, shares[com], sizeof(int) * (n + 1));
-	candidates[com] = -1;
+	int *cand = (int *)malloc(sizeof(int) * (n + 1));
+	int *cand_shares = (int *)malloc(sizeof(int) * (n + 1));
+	int cand_pos = candidates_nr, cid, i;
+	memcpy(cand, candidates, sizeof(int) * candidates_nr);
 
+	for(i = 0; i < cand_pos; i++) {
+		cand_shares[cand[i]] = shares[com][cand[i]];
+	}
+	
 	while(1) {
-		can = -1;
-		for(i = 1; i <= n; i++) {
-			if (candidates[i] < 0) continue;
-			if (candidates[i] > 50) {
-				can = i;
+		cid = -1;
+		for(i = 0; i < cand_pos; i++) {
+			if (cand[i] == com) {
+				cand[i] = cand[--cand_pos];
+			}
+			if (cand_shares[cand[i]] > 50) {
+				cid = cand[i];
+				cand[i] = cand[--cand_pos];
 				break;
 			}
 		}
-		if (can < 0) break;
+		if (cid < 0)	break;
 
-		//printf("%d %d\n", com, can);
-		control[com][can] = 1;
-		candidates[can] = -1;
-		for(i = 1; i <= n; i++) {
-			if (candidates[i] < 0 && can == i) continue;
-			candidates[i] += shares[can][i];
-		}		
+		control[com][cid] = 1;
+
+		for(i = 0; i < cand_pos; i++) {
+			cand_shares[cand[i]] += shares[cid][cand[i]];
+		}
 	}
 }
 
@@ -49,6 +55,9 @@ main() {
 
 	shares = (int**)malloc(sizeof(int *) * (c + 1));
 	control = (int**)malloc(sizeof(int *) * (c + 1));
+	candidates = (int *)malloc(sizeof(int) * (c + 1));
+	int *map = (int *)malloc(sizeof(int) * (c + 1));
+	memset(map, 0, sizeof(int) * (c + 1));
 	for(i = 0; i <= c; i++) {
 		shares[i] = (int *)malloc(sizeof(int) * (c + 1));
 		memset(shares[i], 0, sizeof(int) * (c + 1));
@@ -62,17 +71,23 @@ main() {
 		fscanf(fin, "%d", &c2);
 		fscanf(fin, "%d", &v);
 		shares[c1][c2] = v;
-		//printf("%d %d %d", c1, c2, v);
+		if (!map[c1]) {
+			candidates[candidates_nr++] = c1;
+			map[c1] = 1;
+		}
+
+		if (!map[c2]) {
+			candidates[candidates_nr++] = c2;
+			map[c2] = 1;
+		}
 	}
 
-	n = 100;
-
-	for(i = 1; i <= n; i++) {
-		find(i);
+	for(i = 0; i < candidates_nr; i++) {
+		find(candidates[i]);
 	}
 
-	for(i = 1; i <= c; i++) {
-		for(j = 1; j <= c; j++) {
+	for(i = 1; i <= 100; i++) {
+		for(j = 1; j <= 100; j++) {
 			if (i != j && control[i][j] > 0)
 				fprintf(fout, "%d %d\n", i, j);
 		}
