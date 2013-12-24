@@ -9,27 +9,37 @@ TASK: comehome
 #include <string.h>
 int matrix[256][256];
 
+int min(unsigned int a, unsigned int b) {
+	return a > b ? b : a;
+}
 
-char findMin(int *dist, char *cand) {
-	int i, minindex = 0;
-	char min = cand[0];
-	if (!min)
-		return min;
+char findMin(unsigned int *dist, char *cand) {
+	unsigned int minv = 0xffffffff;
+	int minindex = 0, i;
+	char ret;
+
+	if (!cand[0] || !cand[1]) {
+		cand[0] = '\0';
+		return cand[0];
+	}
+
 	for(i = 0; cand[i]; i++) {
-		if (dist[cand[i]] < dist[min]) {
-			min = cand[i];
+		if (dist[cand[i]] >= 0 && dist[cand[i]] < minv) {
+			minv = dist[cand[i]];
 			minindex = i;
+			ret = cand[i];
 		}
 	}
 
-	cand[minindex] = cand[len - 1];
-	return min;
+	cand[minindex] = cand[i - 1];
+	cand[i - 1] = '\0';
+	return ret;
 }
 
 main() {
 	FILE *fin = fopen("comehome.in", "r");
 	FILE* fout = fopen("comehome.out", "w");
-	int i, d, pos = 0;
+	int i, j, d, pos = 0;
 	char f, t;
 	unsigned int dist[256];
 	char cand[256];
@@ -43,19 +53,24 @@ main() {
 	}
 	int n;
 	fscanf(fin, "%d", &n);
+	fgetc(fin);
 	for(i = 0; i < n; i++) {
 		fscanf(fin, "%c %c %d", &f, &t, &d);
-		matrix[f][t] = d;
-		matrix[t][f] = d;
+		if (matrix[f][t] == -1 || d < matrix[f][t]) {
+			matrix[f][t] = d;
+			matrix[t][f] = d;
+		}
 
 		if (dist[f] == 0) {
 			cand[pos++] = f;
-			dist[f] == 1;
+			dist[f] = 1;
 		}
 		if (dist[t] == 0 && t != 'Z'){
 			cand[pos++] = t;
-			dist[t] == 1;
+			dist[t] = 1;
 		}
+		if (i < n - 1)
+			fgetc(fin);
 	}
 
 	memset(dist, 0xffffffff, sizeof(unsigned int) * 256);
@@ -71,36 +86,33 @@ main() {
 
 	while(1) {
 		char m = findMin(dist, cand);
+		if (!m) break;
+
 		matrix[m]['Z'] = dist[m];
 
 		for (i = 'a'; i <= 'z'; i++) {
-			if (matrix[m][i] != -1)
-				dist[i] = min(dist[i], dist[m] + matrix[m][i]);
+			if (matrix[i][m] != -1) {
+				dist[i] = min(dist[i], dist[m] + matrix[i][m]);
+			}
 		}
 
 		for (i = 'A'; i < 'Z'; i++) {
-			if (matrix[m][i] != -1)
-				dist[i] = min(dist[i], dist[m] + matrix[m][i]);
+			if (matrix[i][m] != -1) {
+				dist[i] = min(dist[i], dist[m] + matrix[i][m]);
+			}
 		}
 	}
 
-	char min = 'a';
-	unsigned int minv = matrix[min]['Z'];
-	for (i = 'a'; i <= 'z'; i++) {
-		if (matrix[i]['Z'] < minv) {
-			min = i;
-			minv = matrix[i]['Z'];
-		}
-	}
-
+	char minc;
+	unsigned int minv = 0xffffffff;
 	for (i = 'A'; i < 'Z'; i++) {
-		if (matrix[i]['Z'] < minv) {
-			min = i;
+		if (matrix[i]['Z'] > 0 && matrix[i]['Z'] < minv) {
+			minc = i;
 			minv = matrix[i]['Z'];
 		}
 	}
 
-	printf("%c, %d\n", min, minv);
+	fprintf(fout, "%c %d\n", minc, minv);
 	exit(0);
 }
 
