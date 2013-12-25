@@ -14,7 +14,7 @@ struct vnode{
 	int b;
 	int v;
 };
-struct vnode varr[10000];
+struct vnode* varr[10000];
 
 int compare(const void *x, const void *y) {
 	return ((struct vnode *)x)->v - ((struct vnode *)y)->v;
@@ -26,7 +26,7 @@ int dfs(int p, int **resmatrix, int* visited) {
 		return 1;
 	visited[p] = 1;
 	for(i = 1; i <= n; i++) {
-		if (resmatrix[p][i] < ITF && dfs(i, resmatrix))
+		if (resmatrix[p][i] < ITF && dfs(i, resmatrix, visited))
 			return 1;
 	}
 	return 0;
@@ -37,19 +37,22 @@ int checkloop(int **resmatrix) {
 	int *visited = (int*)malloc(sizeof(int) * (n + 1));
 	memset(visited, 0, sizeof(int) * (n + 1));
 	for(i = 1; i <= n; i++) {
-		if (!visited[i] && dfs(i, resmatrix))
+		if (!visited[i] && dfs(i, resmatrix, visited))
 			return 1;
 	}
 	return 0;
 }
 
 main() {
-	FILE* fin = fopen("orginet.in", "r");
-	FILE* fout = fopen("orginet.out", "w");
+	FILE* fin = fopen("agrinet.in", "r");
+	FILE* fout = fopen("agrinet.out", "w");
 	int i, j, pos = 0;
+	printf("dddddddddddddd\n");
 	fscanf(fin, "%d", &n);
+	printf("readin: %d\n", n);
 	int **matrix = (int**)malloc(sizeof(int*) * (n + 1));
 	int **resmatrix = (int**)malloc(sizeof(int*) * (n + 1));
+	printf("hi1\n");
 	for(i = 0; i <= n; i++) {
 		matrix[i] = (int *)malloc(sizeof(int) * (n + 1));
 		resmatrix[i] = (int *)malloc(sizeof(int) * (n + 1));
@@ -58,7 +61,6 @@ main() {
 			resmatrix[i][j] = ITF;
 		}
 	}
-	printf("hi\n");
 	for(i = 1; i <= n; i++) {
 		for(j = 1; j <= n; j++) {
 			fscanf(fin, "%d", &matrix[i][j]);
@@ -67,18 +69,26 @@ main() {
 				n->a = i;
 				n->b = j;
 				n->v = matrix[i][j];
+				printf("%d %d %d\n", i, j, matrix[i][j]);
 				varr[pos++] = n;
 			}
 		}
+		printf("\n");
 	}
 
-	qsort(varr, pos, sizeof(struct vnode), compare);
+	qsort(varr, pos, sizeof(struct vnode *), compare);
+	printf("hi2\n");
+	if (!varr) {
+		printf("WTF\n");
+		return 1;
+	}
 
 	i = 1;
 	j = 0;
 	while(i < n) {
 		struct vnode *n = varr[j++];
-		resmatrix[n->a][n->b] = v;
+		printf("%d %d %d\n", n->a, n->b, n->v);
+		resmatrix[n->a][n->b] = n->v;
 		if(checkloop(resmatrix)) {
 			resmatrix[n->a][n->b] = ITF;
 			continue;
