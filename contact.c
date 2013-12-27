@@ -52,7 +52,7 @@ int getbits(int f, int t) {
 	int start = f % 16;
 	int end = t % 16;
 
-	if (start < end)
+	if (start <= end)
 		return ret + __getbits(vi, start, end);
 	else
 		return ret + (__getbits(vi, start, 15) << (end + 1)) + __getbits(str[fi + 1], 0, end); 
@@ -71,8 +71,8 @@ void printbinary(int v) {
 }
 
 main() {
-	FILE* fin = fopen("contact.in", "r");
-	FILE* fout = fopen("contact.out", "w");
+	fin = fopen("contact.in", "r");
+	fout = fopen("contact.out", "w");
 	int pos = 0, lastv, count;
 
 	memset(str, 0, sizeof(int16_t) * 12501);
@@ -105,6 +105,7 @@ main() {
 		fgetc(fin);
 	}
 
+
 	for(i = a; i <= b; i++) {
 		for(k = 0; k <= len - i; k++) {
 			int v = getbits(k, k + i - 1);
@@ -128,6 +129,8 @@ main() {
 	pos = 0;
 	lastv = 0;
 	while(n > 0 || !finished)  {	
+		if (narr[pos].v < 2)
+			break;
 		if (lastv != narr[pos].v) {
 			lastv = narr[pos].v;
 			count = 1;
@@ -141,10 +144,12 @@ main() {
 			printbinary(narr[pos].a);
 			n--;
 		} else {
-			fprintf(fout, " ");
+			if (count != 1)
+				fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			if (count == 6) {
-				fprintf(fout, "\n");
+				if (narr[pos + 1].v == lastv)
+					fprintf(fout, "\n");
 				count = 0;
 			}
 			count++;
