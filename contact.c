@@ -18,6 +18,8 @@ struct node {
 };
 
 struct node narr[8193];
+FILE* fin;
+FILE* fout;
 
 int compare(const void* x, const void* y) {
 	struct node *nx = (struct node *)x;
@@ -25,7 +27,7 @@ int compare(const void* x, const void* y) {
 
 	if (nx->v != ny->v)
 		return ny->v - nx->v;
-	return ny->a - nx->a;
+	return nx->a - ny->a;
 }
 
 int min(int a, int b) {
@@ -34,12 +36,10 @@ int min(int a, int b) {
 
 int __getbits(int16_t v, int a, int b) {
 	int ret = 0;
-	printf("a: %d, b: %d, ", a, b);
 	while(a <= b) {
 		ret = (ret << 1) + ((v & (1 << a)) >> a);
 		a++;
 	}
-	printf("ret: %d\n", ret);
 	return ret;
 }
 
@@ -59,10 +59,14 @@ int getbits(int f, int t) {
 }
 
 void printbinary(int v) {
-	int mask = 
-	while(v > 1) {
-		printf("%d", (v & 1));
-		v = (v >> 1);
+	int mask = (1 << 15);
+	while(!(mask & v)) {
+		mask = mask >> 1;
+	}
+	mask = mask >> 1;
+	while(mask > 0) {
+		fprintf(fout, "%d", (v & mask) > 0);
+		mask = mask >> 1;
 	}
 }
 
@@ -102,11 +106,8 @@ main() {
 	}
 
 	for(i = a; i <= b; i++) {
-		printf("\nlen: %d\n", i);
 		for(k = 0; k <= len - i; k++) {
-			printf("start: %d, end: %d\n", k, k + i - 1);
 			int v = getbits(k, k + i - 1);
-			printf("index: %d\n", v);
 			rec[v]++;
 		}
 	}
@@ -120,7 +121,6 @@ main() {
 		}
 	}
 	qsort(narr, pos, sizeof(struct node), compare);
-	printf("finalv: %d\n", narr[0].v);
 
 	int init = 1;
 	int finished = 1;
@@ -132,19 +132,19 @@ main() {
 			lastv = narr[pos].v;
 			count = 1;
 			if (!init) {
-				printf("\n");
+				fprintf(fout, "\n");
 			}
 			init = 0;
-			printf("%d\n", lastv);
+			fprintf(fout, "%d\n", lastv);
 			if (count > 1)
-				printf(" ");
+				fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			n--;
 		} else {
-			printf(" ");
+			fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			if (count == 6) {
-				printf("\n");
+				fprintf(fout, "\n");
 				count = 0;
 			}
 			count++;
@@ -158,6 +158,8 @@ main() {
 				finished = 1;
 		}
 	}
+	fprintf(fout, "\n");
+	fclose(fout);
 
 	exit(0);
 }
