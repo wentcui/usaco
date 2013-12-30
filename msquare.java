@@ -8,15 +8,12 @@ import java.io.*;
 import java.util.*;
 
 class msquare {
-	static char[] res = new char[10000];
 	static HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
-	static int finalpos = 0;
 	static int finalstate = 0;
-	static boolean success = false;
 
 	static int get(int state, int pos) {
 		int mask = 0x0000000f;
-		return (state & (mask << (4 * pos))) >> (4 * pos);
+		return ((state & (mask << (4 * pos))) >> (4 * pos) & mask);
 	}
 
 	static int clear(int pos, int state){
@@ -55,55 +52,64 @@ class msquare {
 		int masklow = 0x0000ffff;
 		int newstate = state & masklow;
 		newstate = newstate << 16;
-		newstate |= (state >> 16);
+		newstate += ((state >> 16) & masklow);
 		return newstate;
-	}
-
-	static void dfs(int state, int pos) {
-		if (success || visited.containsKey(state))
-			return;
-		if (state == finalstate) {
-			success = true;
-			finalpos = pos;
-			return;
-		}
-
-		int newstate = state;
-		dfs(newstate, pos);
-
-		newstate = trans_A(state);
-		res[pos] = 'A';
-		dfs(newstate, pos + 1);
-		if (success)
-			return;
-
-		newstate = trans_B(state);
-		res[pos] = 'B';
-		dfs(newstate, pos + 1);
-		if (success)
-			return;
-		
-		newstate = trans_C(state);
-		res[pos] = 'C';
-		dfs(newstate, pos + 1);
 	}
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader f = new BufferedReader(new FileReader("msquare.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("msquare.out")));
 		StringTokenizer st = new StringTokenizer(f.readLine());
-		int s = 0;
+		int init_s = 0x87651234;
+		String finalpath = "HI";
+
+		Queue<Integer> q1 = new LinkedList<Integer>();
+		Queue<String> q2 = new LinkedList<String>();
+
 		for(int i = 3; i >= 0; i--) {
-			s = set(i, s, Integer.parseInt(st.nextToken()));
+			finalstate = set(i, finalstate, Integer.parseInt(st.nextToken()));
 		}
 
-		for(int i = 7; i >= 4; i--) {
-			s = set(i, s, Integer.parseInt(st.nextToken()));
+		for(int i = 4; i <= 7; i++) {
+			finalstate = set(i, finalstate, Integer.parseInt(st.nextToken()));
 		}
-		dfs(s, 0);
-		for(int i = 0; i < finalpos; i++) {
-			System.out.print(res[i]);
+		q1.offer(init_s);
+		q2.offer("");
+
+		while(!q1.isEmpty()) {
+			int curstate = q1.poll();
+			String path = q2.poll();
+			
+			int nextstate = trans_A(curstate);
+			String nextpath = new String(path) + 'A';
+			if (nextstate == finalstate) {
+				finalpath = nextpath;
+				break;
+			}
+			q1.offer(nextstate);
+			q2.offer(nextpath);
+
+			nextstate = trans_B(curstate);
+			nextpath = new String(path) + 'B';
+			if (nextstate == finalstate) {
+				finalpath = nextpath;
+				break;
+			}
+			q1.offer(nextstate);
+			q2.offer(nextpath);
+
+			nextstate = trans_C(curstate);
+			nextpath = new String(path) + 'C';
+			if (nextstate == finalstate) {
+				finalpath = nextpath;
+				break;
+			}
+			q1.offer(nextstate);
+			q2.offer(nextpath);
 		}
+		out.println(finalpath);
+		out.close();
+
 		System.exit(0);
 	}
 }
