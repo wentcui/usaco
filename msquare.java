@@ -56,6 +56,31 @@ class msquare {
 		return newstate;
 	}
 
+	static int finallen = Integer.MAX_VALUE;
+	static void dfs(int state, int finalstate, int curlen, HashMap<Integer, Integer> visited) {
+		if (finalstate == state) {
+			if (curlen < finallen)
+				finallen = curlen;
+			return;
+		}
+		System.out.println(curlen);
+
+		if (visited.containsKey(state))
+			return;
+		visited.put(state, 1);
+
+		int nextstate = trans_A(state);
+		dfs(nextstate, finalstate, curlen + 1, visited);
+
+		nextstate = trans_B(state);
+		dfs(nextstate, finalstate, curlen + 1, visited);
+
+		nextstate = trans_C(state);
+		dfs(nextstate, finalstate, curlen + 1, visited);
+
+		visited.remove(state);
+	}
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader f = new BufferedReader(new FileReader("msquare.in"));
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("msquare.out")));
@@ -65,7 +90,6 @@ class msquare {
 		int curstate, nextstate, curpos, finalpos = 0;
 		String path, nextpath;
 		char[] res = new char[500];
-
 		Queue<Integer> q1 = new LinkedList<Integer>();
 		Queue<Integer> q2 = new LinkedList<Integer>();
 
@@ -81,6 +105,8 @@ class msquare {
 			out.close();
 			System.exit(0);
 		}
+		dfs(init_s, finalstate, 0, visited);
+/*
 		q1.offer(init_s);
 		q2.offer(0);
 
@@ -90,10 +116,12 @@ class msquare {
 			visited.put(curstate, curpos);
 
 			nextstate = trans_A(curstate);
-			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos + 1) {
+				System.out.println(curpos + "ops: " + 'A');
 				res[curpos] = 'A';
 				if (nextstate == finalstate) {
 					finalpos = curpos;
+					System.out.println("catched1");
 					break;
 				}
 				q1.offer(nextstate);
@@ -101,10 +129,12 @@ class msquare {
 			}
 
 			nextstate = trans_B(curstate);
-			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos + 1) {
+				System.out.println(curpos + "ops: " + 'B');
 				res[curpos] = 'B';
 				if (nextstate == finalstate) {
 					finalpos = curpos;
+					System.out.println("catched2");
 					break;
 				}
 				q1.offer(nextstate);
@@ -112,10 +142,12 @@ class msquare {
 			}
 
 			nextstate = trans_C(curstate);
-			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos + 1) {
+				System.out.println(curpos + "ops: " + 'C');
 				res[curpos] = 'C';
 				if (nextstate == finalstate) {
 					finalpos = curpos;
+					System.out.println("catched3");
 					break;
 				}
 				q1.offer(nextstate);
@@ -127,7 +159,7 @@ class msquare {
 			out.print(res[i]);
 		}
 		out.close();
-
+*/
 		System.exit(0);
 	}
 }

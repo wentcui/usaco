@@ -63,7 +63,7 @@ main() {
 			mindist = runningmin;
 	}
 
-	printf("%d\n", mindist);
+	fprintf(fout, "%d\n", mindist);
 
 	exit(0);
 }
