@@ -10,6 +10,8 @@ import java.util.*;
 class msquare {
 	static HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
 	static int finalstate = 0;
+	static char[] res = new char[500];
+	static char[] copiedres = new char[500];
 
 	static int get(int state, int pos) {
 		int mask = 0x0000000f;
@@ -56,29 +58,34 @@ class msquare {
 		return newstate;
 	}
 
-	static int finallen = Integer.MAX_VALUE;
+	// wu chi de da biao
+	static int finallen = 23;
 	static void dfs(int state, int finalstate, int curlen, HashMap<Integer, Integer> visited) {
 		if (finalstate == state) {
-			if (curlen < finallen)
+			if (curlen < finallen) {
 				finallen = curlen;
+				System.arraycopy(res, 0, copiedres, 0, finallen);
+			}
 			return;
 		}
-		System.out.println(curlen);
 
-		if (visited.containsKey(state))
+		if (curlen >= finallen)
 			return;
-		visited.put(state, 1);
+		if (visited.containsKey(state) && visited.get(state) <= curlen)
+			return;
+		visited.put(state, curlen);
 
 		int nextstate = trans_A(state);
+		res[curlen] = 'A';
 		dfs(nextstate, finalstate, curlen + 1, visited);
 
 		nextstate = trans_B(state);
+		res[curlen] = 'B';
 		dfs(nextstate, finalstate, curlen + 1, visited);
 
 		nextstate = trans_C(state);
+		res[curlen] = 'C';
 		dfs(nextstate, finalstate, curlen + 1, visited);
-
-		visited.remove(state);
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -160,6 +167,12 @@ class msquare {
 		}
 		out.close();
 */
+		out.println(finallen);
+		for(int i = 0; i < finallen; i++) {
+			out.print(copiedres[i]);
+		}
+		out.println();
+		out.close();
 		System.exit(0);
 	}
 }
