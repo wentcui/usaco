@@ -129,7 +129,7 @@ main() {
 	pos = 0;
 	lastv = 0;
 	while(n > 0 || !finished)  {	
-		if (narr[pos].v < 2)
+		if (narr[pos].v < 1)
 			break;
 		if (lastv != narr[pos].v) {
 			lastv = narr[pos].v;
@@ -139,20 +139,20 @@ main() {
 			}
 			init = 0;
 			fprintf(fout, "%d\n", lastv);
-			if (count > 1)
-				fprintf(fout, " ");
+			//if (count > 1)
+			//	fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			n--;
 		} else {
+			count++;
 			if (count != 1)
-				fprintf(fout, " ");
+    			fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			if (count == 6) {
 				if (narr[pos + 1].v == lastv)
 					fprintf(fout, "\n");
 				count = 0;
 			}
-			count++;
 		}
 		pos++;
 
