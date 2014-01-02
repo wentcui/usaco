@@ -8,6 +8,10 @@ TASK: stamps
 #include <stdlib.h>
 #include <string.h>
 
+int min(int a, int b) {
+	return a > b ? b : a;
+}
+
 main() {
 	FILE* fin = fopen("stamps.in", "r");
 	FILE* fout = fopen("stamps.out", "w");
@@ -27,6 +31,7 @@ main() {
 	values[0] = 1;
     for(i = 1; i <= K; i++) {
         for(j = i * max; j > 0; j--) {
+			if (dp[j]) continue;
         	int v = 0;
             for(k = N; k >= 0; k--) {
                 if (j >= values[k])
