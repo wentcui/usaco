@@ -139,8 +139,6 @@ main() {
 			}
 			init = 0;
 			fprintf(fout, "%d\n", lastv);
-			//if (count > 1)
-			//	fprintf(fout, " ");
 			printbinary(narr[pos].a);
 			n--;
 		} else {
