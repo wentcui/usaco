@@ -61,10 +61,13 @@ class msquare {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("msquare.out")));
 		StringTokenizer st = new StringTokenizer(f.readLine());
 		int init_s = 0x87651234;
-		String finalpath = "HI";
+		HashMap<Integer, Integer> visited = new HashMap<Integer, Integer>();
+		int curstate, nextstate, curpos, finalpos = 0;
+		String path, nextpath;
+		char[] res = new char[500];
 
 		Queue<Integer> q1 = new LinkedList<Integer>();
-		Queue<String> q2 = new LinkedList<String>();
+		Queue<Integer> q2 = new LinkedList<Integer>();
 
 		for(int i = 3; i >= 0; i--) {
 			finalstate = set(i, finalstate, Integer.parseInt(st.nextToken()));
@@ -73,41 +76,56 @@ class msquare {
 		for(int i = 4; i <= 7; i++) {
 			finalstate = set(i, finalstate, Integer.parseInt(st.nextToken()));
 		}
+		if (init_s == finalstate) {
+			out.println("0\n");
+			out.close();
+			System.exit(0);
+		}
 		q1.offer(init_s);
-		q2.offer("");
+		q2.offer(0);
 
 		while(!q1.isEmpty()) {
-			int curstate = q1.poll();
-			String path = q2.poll();
-			
-			int nextstate = trans_A(curstate);
-			String nextpath = new String(path) + 'A';
-			if (nextstate == finalstate) {
-				finalpath = nextpath;
-				break;
+			curstate = q1.poll();
+			curpos = q2.poll();
+			visited.put(curstate, curpos);
+
+			nextstate = trans_A(curstate);
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+				res[curpos] = 'A';
+				if (nextstate == finalstate) {
+					finalpos = curpos;
+					break;
+				}
+				q1.offer(nextstate);
+				q2.offer(curpos + 1);
 			}
-			q1.offer(nextstate);
-			q2.offer(nextpath);
 
 			nextstate = trans_B(curstate);
-			nextpath = new String(path) + 'B';
-			if (nextstate == finalstate) {
-				finalpath = nextpath;
-				break;
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+				res[curpos] = 'B';
+				if (nextstate == finalstate) {
+					finalpos = curpos;
+					break;
+				}
+				q1.offer(nextstate);
+				q2.offer(curpos + 1);
 			}
-			q1.offer(nextstate);
-			q2.offer(nextpath);
 
 			nextstate = trans_C(curstate);
-			nextpath = new String(path) + 'C';
-			if (nextstate == finalstate) {
-				finalpath = nextpath;
-				break;
+			if (!visited.containsKey(nextstate) || visited.get(nextstate) > curpos) {
+				res[curpos] = 'C';
+				if (nextstate == finalstate) {
+					finalpos = curpos;
+					break;
+				}
+				q1.offer(nextstate);
+				q2.offer(curpos + 1);
 			}
-			q1.offer(nextstate);
-			q2.offer(nextpath);
 		}
-		out.println(finalpath);
+		out.println(finalpos + 1);
+		for(int i = 0; i <= finalpos; i++) {
+			out.print(res[i]);
+		}
 		out.close();
 
 		System.exit(0);
