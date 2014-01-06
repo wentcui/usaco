@@ -7,7 +7,7 @@ TASK: shopping
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ITF (unsigned int)(-1)
+#define ITF 200000000
 using namespace std;
 
 int min(int a, int b) {
@@ -24,22 +24,22 @@ int base(int n) {
 	return ret;
 }
 
-int get_oldstate(int *offer, int *idx, int *map) {
-	int old_state = 0, i, n, pos;
+int get_oldstate(int *offer, int *idx, int state, int *map) {
+	int i, n, pos;
 	n = offer[0];
 	for(i = 1; i <= n; i++) {
 		pos = map[offer[2 * i]];
 		if (idx[pos] < offer[2 * i + 1])
 			return -1;
-		old_state += (base(5 - pos) * (idx[pos] - offer[2 * i + 1]));
+		state -= (base(5 - pos) * offer[2 * i + 1]);
 	}
-	return old_state;
+	return state;
 }
 
 main() {
 	int offers[100][12] = {{0}};
 	int products[6][3] = {{0}};
-	int dp[66666] = {0};
+	int dp[66666] = {ITF};
 	int idx[6] = {0};
 	int map[1000] = {0};
 
@@ -62,41 +62,43 @@ main() {
 	fscanf(fin, "%d", &b);
 	for(i = 1; i <= b; i++) {
 		fscanf(fin, "%d %d %d", &products[i][0], &products[i][1], &products[i][2]);
+		//printf("%d %d %d\n", products[i][0], products[i][1], products[i][2]);
 		map[products[i][0]] = i;
 	}
 
-	for(i = 0; i < s; i++) {
-		int ori_price = 0;
-		for(j = 1; j <= offers[i][0]; j++) {
-			ori_price += (products[map[offers[i][2 * j]]][2] * offers[i][2 * j + 1]);
-		}
-		offers[i][1] = ori_price - offers[i][1];
-	}
-
+	dp[0] = 0;
 	for(idx[1] = 0; idx[1] <= products[1][1]; idx[1]++)
 	for(idx[2] = 0; idx[2] <= products[2][1]; idx[2]++)
 	for(idx[3] = 0; idx[3] <= products[3][1]; idx[3]++)
 	for(idx[4] = 0; idx[4] <= products[4][1]; idx[4]++)
 	for(idx[5] = 0; idx[5] <= products[5][1]; idx[5]++) {
 		state = idx[1] * 10000 + idx[2] * 1000 + idx[3] * 100 + idx[4] * 10 + idx[5] * 1;
+		//printf("state: %d\n", state);
 		int runningmin = ITF;
 		for(i = 0; i < s; i++) {
-			old_state = get_oldstate(offers[i], idx, map);
+			old_state = get_oldstate(offers[i], idx, state, map);
 			if (old_state < 0)	continue;
+			//printf("old_state: %d, offer[%d][1]: %d\n", old_state, i, offers[i][1]);
 			if (dp[old_state] + offers[i][1] < runningmin)
 				runningmin = dp[old_state] + offers[i][1];
 		}
-		for(j = 5; j > 0; j++) {
+		for(j = 5; j > 0; j--) {
 			if (idx[j] > 0)
 				break;
 		}
+		if (j == 0)
+			continue;
 
+		//printf("runningmin: %d\n", runningmin);
 		old_state = state - base(5 - j);
-		dp[state] = min(dp[old_state], runningmin);
+		dp[state] = min(dp[old_state] + products[j][2], runningmin);
+		//printf("old_state: %d, product[%d][2]: %d, dp[%d]: %d\n", old_state, j, products[j][2], state, dp[state]);
 	}
 
 	state = products[1][1] * 10000 + products[2][1] * 1000 + products[3][1] * 100 + products[4][1] * 10 + products[5][1] * 1;
-	printf("%d", dp[state]);
+	fprintf(fout, "%d\n", dp[state]);
+	fclose(fout);
+	fclose(fin);
 
 	exit(0);
 }
