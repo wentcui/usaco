@@ -9,37 +9,28 @@ TASK: fence
 #include <string.h>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 #define pp pair<int, int>
 
 using namespace std;
-int N, finalpos;
-int res[501];
+int N, finalpos = 0;
+int res[10024];
 
-int dfs(int s, int pos, int map[][501], vector<int> *graph) {
-	int i, ret = 0;
-	vector<pp> marked;
-	if (pos == N) {
-		finalpos = pos;
-		return 1;
+void dfs(int s, int pos, int map[][501], vector<int> *graph) {
+	int i;
+	printf("s: %d\n", s);
+
+	for(i = 501; i >= 1; i--) {
+		if (!map[s][i] || !map[i][s]) continue;
+		printf("i: %d\n", i);
+		map[s][i]--;
+		map[i][s]--;
+
+		dfs(i, pos + 1, map, graph);
 	}
-
-	for(i = 0; i < graph[s].size(); i++) {
-		int d = graph[s][i];
-		if (map[s][i]) continue;
-		map[s][d] = 1;
-		map[d][s] = 1;
-		res[pos] = d;
-		marked.push_back(make_pair(s, d));
-
-		ret |= dfs(d, pos + 1, map, graph);
-		if (ret) return 1;
-	}
-
-	for(i = 0; i < marked.size(); i++) {
-		map[marked[i].first][marked[i].second] = 0;
-	}
-	return ret;
+	printf("get: %d\n", s);
+	res[finalpos++] = s;
 }
 
 main() {
@@ -57,17 +48,38 @@ main() {
 		fscanf(fin, "%d %d", &f, &t);
 		graph[f].push_back(t);
 		graph[t].push_back(f);
+
+		map[f][t]++;
+		map[t][f]++;
+	}
+
+
+	for(i = 0; i < 501; i++) {
+		if (graph[i].size() > 1)
+			sort(graph[i].begin(), graph[i].end());
 	}
 
 	for(i = 0; i < 501; i++) {
 		if (graph[i].size() > 0)
 			break;
 	}
+	printf("size: %lu\n", graph[4].size());
+	for(j = i; j < 501; j++) {
+		if (graph[j].size() % 2 == 1)
+			break;
+	}
+	printf("j : %d\n\n", j);
+	if (j < 501)
+		i = j;
 	res[0] = i;
+
+	printf("6, 5 %d\n", map[6][5]);
+	map[6][5] = 10;
+
 	dfs(i, 1, map, graph);
 
 	for(i = 0; i < finalpos; i++) {
-		printf("%d", res[i]);
+		fprintf(fout, "%d\n", res[i]);
 	}
 
 	exit(0);
