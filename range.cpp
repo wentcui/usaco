@@ -97,7 +97,7 @@ int main() {
 		//printf("v2: %d, ", v);
 		v |= (dp[i - 1][j] && ((dp[i][j - 1] && dp[i - 1][j - 1]) || (validate1(matrix, i, j - k + 1, j - 1) && validate2(matrix, j - k + 1, i - k + 1, i - 1))));
 		//printf("v3: %d, ", v);
-		v |= (dp[i][j] && matrix[i - k + 1][j - k + 1] && ((dp[i - 1][j] && dp[i][j - 1]) || ((validate1(matrix, i - k + 2, j - k + 1, j) && validate2(matrix, j - k + 2, i - k + 1, i)))));
+		v |= (dp[i][j] && matrix[i - k + 1][j - k + 1] && ((dp[i - 1][j] && dp[i][j - 1]) || ((validate1(matrix, i - k + 1, j - k + 2, j) && validate2(matrix, j - k + 1, i - k + 2, i)))));
 		//printf("v4: %d\n", v);
 
 		dp[i][j] = v;
