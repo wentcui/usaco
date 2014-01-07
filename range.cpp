@@ -51,13 +51,13 @@ int main() {
 	FILE* fin = fopen("range.in", "r");
 	FILE* fout = fopen("range.out", "w");
 
-	int N;
-	char c, pos = 0;
+	int N, pos = 0;
+	char c;
 	fscanf(fin, "%d", &N);
 	int matrix[251][251] = {{0}};
 	int dp[251][251] = {{1}};
 	int result[251] = {0};
-	struct node nodearr[251];
+	struct node nodearr[252];
 
 	fgetc(fin);
 	for(i = 1; i <= N; i++) {
@@ -91,13 +91,13 @@ int main() {
 		}
 
 		//printf("k: %d, i: %d, j: %d, ", k, i, j);
-		bool v = dp[i - 1][j - 1] && validate1(matrix, i, j - k + 1, j - 1) && validate2(matrix, j, i - k + 1, i - 1);
+		bool v = dp[i - 1][j - 1] && ((dp[i - 1][j] && dp[i][j - 1]) || (validate1(matrix, i, j - k + 1, j - 1) && validate2(matrix, j, i - k + 1, i - 1)));
 		//printf("v1: %d, ", v);
-		v |= (dp[i][j - 1] && validate1(matrix, i - k + 1, j - k + 1, j - 1) && validate2(matrix, j, i - k + 1, i - 1));
+		v |= (dp[i][j - 1] && ((dp[i - 1][j] && dp[i - 1][j - 1]) || (validate1(matrix, i - k + 1, j - k + 1, j - 1) && validate2(matrix, j, i - k + 1, i - 1))));
 		//printf("v2: %d, ", v);
-		v |= (dp[i - 1][j] && validate1(matrix, i, j - k + 1, j - 1) && validate2(matrix, j - k + 1, i - k + 1, i - 1));
+		v |= (dp[i - 1][j] && ((dp[i][j - 1] && dp[i - 1][j - 1]) || (validate1(matrix, i, j - k + 1, j - 1) && validate2(matrix, j - k + 1, i - k + 1, i - 1))));
 		//printf("v3: %d, ", v);
-		v |= (dp[i][j] && validate1(matrix, i - k + 1, j - k + 1, j) && validate2(matrix, j - k + 1, i - k + 1, i));
+		v |= (dp[i][j] && matrix[i - k + 1][j - k + 1] && ((dp[i - 1][j] && dp[i][j - 1]) || ((validate1(matrix, i - k + 2, j - k + 1, j) && validate2(matrix, j - k + 2, i - k + 1, i)))));
 		//printf("v4: %d\n", v);
 
 		dp[i][j] = v;
@@ -112,6 +112,7 @@ int main() {
 			pos++;
 		}
 	}
+
 
 	qsort(nodearr, pos, sizeof(struct node), compare);
 	for(i = 0; i < pos; i++) {
