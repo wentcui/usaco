@@ -34,7 +34,7 @@ int main(){
         for(j=1; j<=M; ++j)
             for(k=1; k<=T; ++k)
                 if(k<cost[i])
-                    f[i][j][k] = max(f[i-1][j][k], f[i-1][j-1][T]); 
+                    f[i][j][k] = f[i-1][j][k]; 
                 else
                     f[i][j][k] = max(f[i-1][j][k-cost[i]], f[i-1][j-1][T])+1;
 
