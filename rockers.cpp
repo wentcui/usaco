@@ -33,6 +33,7 @@ int main(){
     for(i=1; i<=N; ++i)
         for(j=1; j<=M; ++j)
             for(k=1; k<=T; ++k) {
+				// k is the used size of the last dist
                 f[i][j][k] = f[i-1][j][k]; 
                 if(k >= cost[i])
                     f[i][j][k] = max(max(f[i-1][j][k-cost[i]], f[i-1][j-1][T])+1, f[i][j][k]);
