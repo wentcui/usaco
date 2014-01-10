@@ -27,17 +27,19 @@ int main() {
 	FILE* fout = fopen("nuggets.out", "w");
 	int i = 0, runningmin = 0, runningindex = 0, max = 0, min = ITF;
 	map<int, bool> mymap;
-	int candidates[10000] = {0}, pos = 0;
+	int candidates[60000] = {0}, pos = 0;
 	int values[300] = {0}, indexs[300] = {0};
+	int even = 0;
 
 	fscanf(fin, "%d", &n);
 	for(i = 1; i <= n; i++) {
 		fscanf(fin, "%d", &values[i]);
 		if (values[i] < min)	min = values[i];
+		even += (values[i] % 2);
 	}
 
 
-	if (min == 1) {
+	if (min == 1 || !even) {
 		fprintf(fout, "0\n");
 		return 0;
 	}
@@ -46,16 +48,17 @@ int main() {
 		mymap[i] = true;
 		candidates[pos++] = i;
 	}
-
-	printf("start\n");
+	min--;
 
 	while(runningmin < ITF) {
 		runningmin = ITF;
 		for(i = 1; i <= n; i++) {
+			if (indexs[i] >= pos) continue;
 			int next = candidates[indexs[i]] + values[i];
 
 			if (mymap.find(next) != mymap.end()) {
 				indexs[i]++;
+				i--;
 				continue;
 			}
 			if (next < runningmin) {
@@ -63,23 +66,24 @@ int main() {
 				runningindex = i;
 			}
 		}
-		printf("runningmin: %d\n", runningmin);
+
 		indexs[runningindex]++;
+
 		if (runningmin < ITF && validate(mymap, values, runningmin)) {
-			if (pos >= 10000) {
+			if (pos >= 60000) {
 				printf("ERR\n");
 				return 0;
 			}
 			candidates[pos++] = runningmin;
 			mymap[runningmin] = true;
 
-			printf("validated: %d\n", runningmin);
-
 			min = runningmin;
 		}
 	}
 
-	printf("%d\n", min);
+	fprintf(fout, "%d\n", min);
+	fclose(fout);
+	fclose(fin);
 
 	return 0;
 }
