@@ -9,44 +9,48 @@ LANG: C++
 #include <string.h>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 #define ITF 200000000
+#define PP pair<int, int>
 
 using namespace std;
 
+int minlen = ITF;
+
 
 struct vertex{
-	unsigned int edgesmap[3];
+	unsigned int edgesmap[4];
 };
 
-void setbit(unsigned int map[3], int pos) {
+void setbit(unsigned int map[4], int pos) {
 	int nr = pos / 32;
 	int offset = pos % 32;
 
 	map[nr] |= (1 << offset);
 }
 
-bool validate(unsigned int m1[3], unsigned int m2[3]) {
-	for(int i = 0; i < 3; i++) {
+bool validate(unsigned int m1[4], unsigned int m2[4]) {
+	for(int i = 0; i < 4; i++) {
 		if (m1[i] != m2[i])
 			return false;
 	}
 	return true;
 }
 
-void genMap(unsigned int map[3], vector<int> edges) {
-	memset(map, 0, sizeof(unsigned int) * 3);
+void genMap(unsigned int map[4], vector<int> edges) {
+	memset(map, 0, sizeof(unsigned int) * 4);
 	for(int i = 0; i < edges.size(); i++) {
 		setbit(map, edges[i]);
 	}
 }
 
-int getVertexId(struct vertex verarr[100], int &vertex_nr, vector<int> edges) {
-	unsigned int map[3] = {0};
+int getVertexId(struct vertex verarr[101], int &vertex_nr, vector<int> edges) {
+	unsigned int map[4] = {0};
 	genMap(map, edges);
 	if (vertex_nr == 1) {
-		memset(verarr[1].edgesmap, 0, sizeof(unsigned int) * 3);
-		memcpy(verarr[1].edgesmap, map, sizeof(unsigned int) * 3);
+		memset(verarr[1].edgesmap, 0, sizeof(unsigned int) * 4);
+		memcpy(verarr[1].edgesmap, map, sizeof(unsigned int) * 4);
 		vertex_nr++;
 		return 1;
 	}
@@ -56,25 +60,45 @@ int getVertexId(struct vertex verarr[100], int &vertex_nr, vector<int> edges) {
 			return i;
 	}
 
-	memset(verarr[vertex_nr].edgesmap, 0, sizeof(unsigned int) * 3);
-	memcpy(verarr[vertex_nr++].edgesmap, map, sizeof(unsigned int) * 3);
+	memset(verarr[vertex_nr].edgesmap, 0, sizeof(unsigned int) * 4);
+	memcpy(verarr[vertex_nr++].edgesmap, map, sizeof(unsigned int) * 4);
 	return vertex_nr - 1;
 
+}
+
+void dfs(vector<PP> dist[101], bool map[101], int curlen, int orivertex, int curvertex, int steps) {
+	if (curlen > minlen)
+		return;
+	if (steps <= 2 && curvertex == orivertex)
+		return;
+
+	if (curvertex == orivertex) {
+		if (curlen < minlen) {
+			minlen = curlen;
+		}
+		return;
+	}
+	if (curvertex == -1)
+		curvertex = orivertex;
+	if (map[curvertex])
+		return;
+	map[curvertex] = true;
+
+	for(int i = 0; i < dist[curvertex].size(); i++) {
+		dfs(dist, map, curlen + dist[curvertex][i].second, orivertex, dist[curvertex][i].first, steps + 1);
+	}
+	map[curvertex] = false;
 }
 
 int main() {
 	FILE* fin = fopen("fence6.in", "r");
 	FILE* fout = fopen("fence6.out", "w");
-	struct vertex verarr[100] = {0};
+	struct vertex verarr[101] = {0};
 	int i, j, k, e, vertex_nr = 1;
 	int N, id, l, n1, n2;
-	int dist[101][101] = {{ITF}};
-	for(i = 0; i < 101; i++) {
-		for(j = 0; j < 101; j++) {
-			dist[i][j] = ITF;
-		}
-	}
-	printf("%d %d\n\n", dist[0][0], dist[0][1]);
+	vector<PP> dist[101];
+	bool map[101] = {false};
+	int minv = ITF;
 	fscanf(fin, "%d", &N);
 
 	for(i = 1; i <= N; i++) {
@@ -95,42 +119,15 @@ int main() {
 
 		f = getVertexId(verarr, vertex_nr, es1);
 		t = getVertexId(verarr, vertex_nr, es2);
-		dist[f][t] = l;
-		dist[t][f] = l;
-		printf("%d %d %d\n", id, f, t);
-	}
-
-
-	for(k = 1; k < vertex_nr; k++)
-	for(i = 1; i < vertex_nr; i++)
-	for(j = 1; j < vertex_nr; j++) {
-		dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+		dist[f].push_back(make_pair(t, l));
+		dist[t].push_back(make_pair(f, l));
 	}
 	for(i = 1; i < vertex_nr; i++) {
-		dist[i][i] = ITF;
+		dfs(dist, map, 0, i, -1, 0);
 	}
-	for(i = 1; i < vertex_nr; i++) {
-		for(j = 1; j < vertex_nr; j++) {
-			if (dist[i][j] < ITF)
-				printf("dist[%d][%d]: %d\n", i, j, dist[i][j]);
-		}
-		printf("\n");
-	}
+	fprintf(fout, "%d\n", minlen);
+	fclose(fout);
+	fclose(fin);
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
