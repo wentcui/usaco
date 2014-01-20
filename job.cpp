@@ -48,25 +48,25 @@ int main() {
 		priority_queue<PP, vector<PP>, cmp> q;
 		vector<int> available;
 		t++;
-		printf("t: %d, left: %d\n", t, left);
-
 		for(i = 1; i <= M1; i++) {
 			if (machineA[1][i] <= 1) {
 				available.push_back(i);
-				if (machineA[1][i] == 1)
+				if (machineA[1][i] == 1) {
 					time[t]++;
-			}
+				}
+			} else
+				q.push(make_pair(i, machineA[1][i]));
+
 			if (machineA[1][i] > 0)
 				machineA[1][i]--;
-			q.push(make_pair(i, machineA[1][i]));
 		}
 		if (available.size() == M1 && left <= 0)
 			break;
 		for(i = 0; i < available.size(); i++) {
 			if (left > 0) {
-				//machineA[1][available[i]] = machineA[0][available[i]];
 				left--;
 			} else if (q.top().second > machineA[0][available[i]]) {
+				machineA[1][q.top().first] = 0;
 				q.pop();
 			} else
 				break;
