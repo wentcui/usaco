@@ -28,9 +28,27 @@ int compare (const void * a, const void * b)
 	return ( *(int*)a - *(int*)b );
 }
 
-int compare1 (const void * a, const void * b)
-{
-	return ( *(int*)b - *(int*)a );
+int combine(int *timeA, int ta, int *timeB, int tb) {
+	int max = 0;
+	vector<int> va, vb;
+	for(int i = 1; i <= ta; i++) {
+		while (timeA[i]) {
+			va.push_back(i);
+			timeA[i]--;
+		}
+	}
+	for(int i = 1; i <= tb; i++) {
+		while (timeB[i]) {
+			vb.push_back(i);
+			timeB[i]--;
+		}
+	}
+	reverse(vb.begin(), vb.end());
+	for(int i = 0; i < va.size(); i++) {
+		if (va[i] + vb[i] > max)
+			max = va[i] + vb[i];
+	}
+	return max;
 }
 
 void get_finish_time(int M, int machine[2][31], int *time, int &at) {
@@ -56,13 +74,10 @@ void get_finish_time(int M, int machine[2][31], int *time, int &at) {
 				machine[1][i]--;
 			q.push(make_pair(i, machine[1][i]));
 		}
-		//fprintf(fout, "t: %d, v: %d\n", t, time[t]);
 		if (available.size() == M && left <= 0)
 			break;
-		//fprintf(fout, "t: %ld, left: %d\n", available.size(), left);
 		for(i = 0; i < available.size(); i++) {
 			if (left > 0) {
-				//machineA[1][available[i]] = machineA[0][available[i]];
 				left--;
 			} else if (!q.empty() && q.top().second > machine[0][available[i]]) {
 				machine[1][q.top().first] = 0;
@@ -99,15 +114,10 @@ int main() {
 	qsort(machineB[0], M2 + 1, sizeof(int), compare);
 
 	get_finish_time(M1, machineA, timeA, tA);
-	for(i = 1; i <= tA; i++) {
-		printf("%d ", timeA[i]);
-	}
-	printf("\ntA: %d\n", tA);
+	fprintf(fout, "%d ", tA);
 	get_finish_time(M2, machineB, timeB, tB);
-	for(i = 1; i <= tB; i++) {
-		printf("%d ", timeB[i]);
-	}
-	printf("\ntB: %d\n", tB);
+	fprintf(fout, "%d\n", combine(timeA, tA, timeB, tB));
+	fclose(fout);
 	
 	return 0;
 }
