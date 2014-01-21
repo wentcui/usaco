@@ -64,6 +64,7 @@ int main() {
 		if (available.size() == M1 && left <= 0)
 			break;
 		for(i = 0; i < available.size(); i++) {
+			printf("aaa\n");
 			if (left > 0) {
 				left--;
 			} else if (q.top().second > machineA[0][available[i]]) {
@@ -75,6 +76,7 @@ int main() {
 		}
 	}
 	printf("%d\n", t);
+/*
 	for(i = 1; i <= t; i++) {
 		printf("%d ", time[i]);
 	}
@@ -93,7 +95,6 @@ int main() {
 		left--;
 		i++;
 	}
-/*
 
 	while (1) {
 		at++;
@@ -128,7 +129,6 @@ int main() {
 	printf("final: %d\n", at);
 	return 0;
 */
-	fclose(fout);
 	return 0;
 }
 
