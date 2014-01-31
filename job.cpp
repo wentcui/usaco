@@ -114,8 +114,16 @@ int main() {
 	qsort(machineB[0], M2 + 1, sizeof(int), compare);
 
 	get_finish_time(M1, machineA, timeA, tA);
+	for(i = 1; i <= tA; i++) {
+		printf("%d ", timeA[i]);
+	}
+	printf("\n");
 	fprintf(fout, "%d ", tA);
 	get_finish_time(M2, machineB, timeB, tB);
+	for(i = 1; i <= tB; i++) {
+		printf("%d ", timeB[i]);
+	}
+	printf("\n");
 	fprintf(fout, "%d\n", combine(timeA, tA, timeB, tB));
 	fclose(fout);
 	
