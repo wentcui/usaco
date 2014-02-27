@@ -5,38 +5,38 @@
 
 using namespace std;
 int K, N, M;
+bool map[1001][1001];
 
-vector<int> dfs(vector<int> *graph, vector<int> *connected, bool *visited, int curv) {
+void dfs(vector<int> *graph, bool *visited, bool *visited_sg, int curv, int ori) {
 	int i;
-	vector<int> res, subres;
-	if (visited[curv])
-		return connected[curv];
-
 	visited[curv] = true;
+	if (visited_sg[curv]) {
+		for(i = 1; i <= 1000; i++)
+			map[ori][i] |= map[curv][i];
+		return;
+	}
+	map[ori][curv] = true;
 	for(i = 0; i < graph[curv].size(); i++) {
 		if (!visited[graph[curv][i]]) {
-			subres = dfs(graph, connected, visited, graph[curv][i]);
-			res.insert(res.end(), subres.begin(), subres.end());
+			dfs(graph, visited, visited_sg, graph[curv][i], ori);
 		}
 	}
-	res.push_back(curv);
-	connected[curv] = res;
-	return res;
 }
 
 int main() {
 	int cases, caseno = 0, i, j, v, f, t, count[1001], maxc;
 	vector<int> people, vertex;
-	vector<int> graph[1001], connected[1001];
-	bool visited[1001];
+	vector<int> graph[1001];
+	bool visited[1001], visited_sg[1001];
 	scanf("%d", &cases);
 	while(cases--) {
 		people.clear();
 		vertex.clear();
-		for(i = 1; i <= 1000; i++) {
+		for(i = 0; i <= 1000; i++) {
 			graph[i].clear();
-			connected[i].clear();
+			memset(map, false, sizeof(bool) * 1001);
 		}
+		memset(visited_sg, false, sizeof(bool) * 1001);
 		memset(visited, false, sizeof(bool) * 1001);
 		memset(count, 0, sizeof(int) * 1001);
 		scanf("%d %d %d", &K, &N, &M);
@@ -49,14 +49,15 @@ int main() {
 			graph[f].push_back(t);
 			vertex.push_back(f);
 		}
-		for(i = 0; i < vertex.size(); i++) {
-			if (!visited[vertex[i]])
-				dfs(graph, connected, visited, vertex[i]);
-		}
+
 		for(i = 0, maxc = 0; i < people.size(); i++) {
-			for(j = 0; j < connected[people[i]].size(); j++) {
-				count[connected[people[i]][j]]++;
-				if (count[connected[people[i]][j]] == people.size())
+			memset(visited, false, sizeof(bool) * 1001);
+			dfs(graph, visited, visited_sg, people[i], people[i]);
+			visited_sg[people[i]] = true;
+			for(j = 1; j <= 1000; j++) {
+				if (!map[people[i]][j]) continue;
+				count[j]++;
+				if (count[j] == people.size())
 					maxc++;
 			}
 		}
