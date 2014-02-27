@@ -10,12 +10,12 @@ bool map[1001][1001];
 void dfs(vector<int> *graph, bool *visited, bool *visited_sg, int curv, int ori) {
 	int i;
 	visited[curv] = true;
+	map[ori][curv] = true;
 	if (visited_sg[curv]) {
 		for(i = 1; i <= 1000; i++)
 			map[ori][i] |= map[curv][i];
 		return;
 	}
-	map[ori][curv] = true;
 	for(i = 0; i < graph[curv].size(); i++) {
 		if (!visited[graph[curv][i]]) {
 			dfs(graph, visited, visited_sg, graph[curv][i], ori);
@@ -49,17 +49,24 @@ int main() {
 			graph[f].push_back(t);
 			vertex.push_back(f);
 		}
+		if (!K || !N || !M) {
+			printf("Case %d: 0\n", ++caseno);
+			continue;
+		}
 
 		for(i = 0, maxc = 0; i < people.size(); i++) {
 			memset(visited, false, sizeof(bool) * 1001);
 			dfs(graph, visited, visited_sg, people[i], people[i]);
 			visited_sg[people[i]] = true;
-			for(j = 1; j <= 1000; j++) {
+			printf("ori %d:", people[i]);
+			for(j = 0; j <= 1000; j++) {
 				if (!map[people[i]][j]) continue;
+				printf(" %d", j);
 				count[j]++;
 				if (count[j] == people.size())
 					maxc++;
 			}
+			printf("\n");
 		}
 
 		printf("Case %d: %d\n", ++caseno, maxc);
