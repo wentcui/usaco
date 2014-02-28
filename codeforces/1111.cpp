@@ -30,11 +30,12 @@ int main() {
 	bool visited[1001], visited_sg[1001];
 	scanf("%d", &cases);
 	while(cases--) {
+		maxc = 0;
 		people.clear();
 		vertex.clear();
 		for(i = 0; i <= 1000; i++) {
 			graph[i].clear();
-			memset(map, false, sizeof(bool) * 1001);
+			memset(map[i], false, sizeof(bool) * 1001);
 		}
 		memset(visited_sg, false, sizeof(bool) * 1001);
 		memset(visited, false, sizeof(bool) * 1001);
@@ -54,19 +55,16 @@ int main() {
 			continue;
 		}
 
-		for(i = 0, maxc = 0; i < people.size(); i++) {
+		for(i = 0; i < people.size(); i++) {
 			memset(visited, false, sizeof(bool) * 1001);
 			dfs(graph, visited, visited_sg, people[i], people[i]);
 			visited_sg[people[i]] = true;
-			printf("ori %d:", people[i]);
-			for(j = 0; j <= 1000; j++) {
+			for(j = 1; j <= 1000; j++) {
 				if (!map[people[i]][j]) continue;
-				printf(" %d", j);
 				count[j]++;
 				if (count[j] == people.size())
 					maxc++;
 			}
-			printf("\n");
 		}
 
 		printf("Case %d: %d\n", ++caseno, maxc);
