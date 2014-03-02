@@ -22,6 +22,7 @@ int main() {
 		for(k = 1; k <= l1 + l2; k++)
 			for(i = 1; i <= l1; i++)
 				for(j = 1; j <= l2; j++) {
+					if (i + j < k)	continue;
 					if (s1[i] == s2[j])
 						dp[i][j][k] = dp[i - 1][j - 1][k - 1];
 					else
