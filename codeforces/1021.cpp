@@ -60,7 +60,7 @@ int main() {
 		len = strlen(input);
 		for(i = 0; input[i]; i++) {
 			if ('A' <= input[i] && input[i] <= 'Z')
-				input[i] -= 'A';
+				input[i] -= ('A' - 10);
 			else
 				input[i] -= '0';
 		}
