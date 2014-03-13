@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int dp[102232] = {0};
+unsigned long dp[102232] = {0};
 
 struct cmp {
 	bool operator() (const PP &p1, const PP &p2) {
@@ -56,7 +56,8 @@ int bSearch(unsigned long *arr, int start, int end, unsigned long value) {
 }
 
 
-int get_tree_nr(int nr) {
+int get_tree_nr(int n) {
+/*
 	unsigned long sum = 0;
 	if (nr < 0)
 		return 0;
@@ -66,10 +67,22 @@ int get_tree_nr(int nr) {
 		return dp[nr];
 
 	for(int i = 1; i <= nr; i++)
-		sum += ((get_tree_nr(i - 1) % MOD) * (get_tree_nr(nr - i) % MOD));
+		sum += (((get_tree_nr(i - 1) % MOD) * (get_tree_nr(nr - i) % MOD)) % MOD);
 
 	dp[nr] = sum % MOD;
 	return dp[nr];
+ */
+	memset(dp, 0, sizeof(unsigned long) * 102232);
+	dp[0] = 1;
+
+	for (int i = 1; i <= n; i++) {
+		unsigned long s = 0;
+		for (int j = 1; j <= i; j++) {
+			s += ((dp[j - 1] % MOD) * (dp[i - j] % MOD));
+		}
+		dp[i] = (s % MOD);
+	}
+	return dp[n];
 }
 
 
@@ -82,7 +95,7 @@ int main() {
 		scanf("%lu %lu", &s, &e);
 		ss = bSearch(pn, 1, len, s);
 		ee = bSearch(pn, ss, len, e);
-		
+
 		if (e == pn[ee])
 			ee++;
 		//printf("%lu, %d, %lu\n", e, ee, pn[ee]);
