@@ -7,80 +7,72 @@
 #define MAX 1000000000
 using namespace std;
 
-int N, K;
+int N, K, cindex;
+unsigned int left[20000], right[20000];
 
 int cmp(const void *a,const void *b) {
-	int *x = (int *) a;
-	int *y = (int *) b;
+	unsigned int *x = (unsigned int *) a;
+	unsigned int *y = (unsigned int *) b;
 	return *x - *y;
 }
 
-bool fn(unsigned int *input) {
-	unsigned long last;
-	unsigned int lasttop, nexttop;
-	vector<unsigned int> candidates;
-	priority_queue <unsigned int> q;
-	last = 0;
-	candidates.push_back(0);
-	for(int i = 1; i < 2 * N; i++) {
-		q.push(input[i]);
-		for(int j = 0; j < candidates.size(); j++) {
-			unsigned long next = input[i] + candidates[j];
-			if (next > MAX)
-				break;
-			q.push(next);
-		}
-		if (q.empty())
-			break;
-		lasttop = q.top();
-		q.pop();
-		while(true) {
-			if (lasttop > last) {
-				last = lasttop;
-				candidates.push_back(last);
-			}
-			if (q.empty())
-				break;
+void gen(unsigned int *candidates, unsigned int sum, unsigned int *arr, int curindex, int len) {
+	if (curindex >= len) {
+		candidates[cindex++] = sum;
+		return;
+	}
 
-			nexttop = q.top();
-			if (nexttop > lasttop + 1)
-				break;
-			lasttop = nexttop;
-			q.pop();
-		}
+	gen(candidates, sum, arr, curindex + 1, len);
+	gen(candidates, sum + arr[curindex], arr, curindex + 1, len);
+	gen(candidates, sum + 2 * arr[curindex], arr, curindex + 1, len);
+}
+
+
+int bSearch(unsigned int *arr, int start, int len, unsigned int value) {
+	int mid, l = start, r = len;
+	while(l < r) {
+		mid = l + (r - l) / 2;
+		if (arr[mid] < value)
+			l = mid + 1;
+		else
+			r = mid;
 	}
-	while(!q.empty()) {
-		nexttop = q.top();
-		q.pop();
-		if (nexttop > last) {
-			candidates.push_back(nexttop);
-			last = nexttop;
-		}
-	}
-	for(int i = 0; i < candidates.size(); i++) {
-		printf("%u ", candidates[i]);
-	}
-	return true;
+	return l;
 }
 
 int main() {
-	int cases, caseno = 0;
-	unsigned int input[40] = {0};
+	int ll, rl, rt, i, cases, caseno = 0;
+	unsigned int input[20] = {0};
 	scanf("%d", &cases);
 	while(cases--) {
 		scanf("%d %d", &N, &K);
 		memset(input, 0, sizeof(unsigned int) * 20);
-		for(int i = 0; i < N; i++) {
-			scanf("%d", &input[2 * i]);
-			input[2 * i + 1] = input[2 * i];
+		for(i = 0; i < N; i++) {
+			scanf("%d", &input[i]);
 		}
-		qsort(input, 2 * N, sizeof(unsigned int), cmp);
-		fn(input);
+		cindex = 0;
+		memset(left, 0, sizeof(unsigned int) * 20000);
+		memset(right, 0, sizeof(unsigned int) * 20000);
+		gen(left, 0, input, 0, N / 2);
+		ll = cindex;
+		qsort(left, ll, sizeof(unsigned int), cmp);
+
+
+		cindex = 0;
+		gen(right, 0, input + N / 2, 0, N - N / 2);
+		rl = cindex;
+		qsort(right, rl, sizeof(unsigned int), cmp);
+
+		for(i = 1; i < ll; i++) {
+			rt = bSearch(right, 1, rl, K - left[i]);
+			if (right[rt] == K - left[i]) {
+				printf("Case %d: Yes\n", ++caseno);
+				break;
+			}
+		}
+		if (i == ll)
+			printf("Case %d: No\n", ++caseno);
+			
 	}
 	return 0;
 }
-
-
-
-
-
