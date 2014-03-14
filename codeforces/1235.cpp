@@ -8,7 +8,7 @@
 using namespace std;
 
 int N, K, cindex;
-unsigned int left[20000], right[20000];
+unsigned int left[20000] = {0}, right[20000] = {0};
 
 int cmp(const void *a,const void *b) {
 	unsigned int *x = (unsigned int *) a;
@@ -63,8 +63,8 @@ int main() {
 		rl = cindex;
 		qsort(right, rl, sizeof(unsigned int), cmp);
 
-		for(i = 1; i < ll; i++) {
-			rt = bSearch(right, 1, rl, K - left[i]);
+		for(i = 0; i < ll; i++) {
+			rt = bSearch(right, 0, rl, K - left[i]);
 			if (right[rt] == K - left[i]) {
 				printf("Case %d: Yes\n", ++caseno);
 				break;
