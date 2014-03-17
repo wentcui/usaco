@@ -1,21 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 #include <queue>
 
-#define PP pair<<int, int>, int>
+#define PP pair<pair<int, int>, int>
 using namespace std;
 
 int N, M;
 
 struct cmp {
 	bool operator() (const PP &p1, const PP &p2) {
-		return p2.second > p1.second;
+		return p1.second > p2.second;
 	}
 };
 
 bool validate(int input[101][101], PP p, bool verified[2][101]) {
-	int i, x = p.fisrt.first, y = p.first.second;
+	int i, x = p.first.first, y = p.first.second;
 	bool r1 = true, r2 = true;
+	printf("%d, %d: %d\n", p.first.first, p.first.second, p.second);
 	if (!verified[0][x]) {
 		for(i = 1; i <= N; i++)
 			if (input[i][y] > input[x][y]) {
@@ -32,6 +34,10 @@ bool validate(int input[101][101], PP p, bool verified[2][101]) {
 			}
 		verified[1][y] = true;
 	}
+	if (r1 || r2)
+		printf("ret true\n");
+	else
+		printf("ret false\n");
 	return (r1 || r2);
 }
 
@@ -41,11 +47,11 @@ int main() {
 	int cases, caseno = 0, i, j;
 	int input[101][101];
 
-	scanf("%d", &cases);
+	fscanf(fin, "%d", &cases);
 	while(cases--) {
 		priority_queue<PP, vector<PP>, cmp> q;
 		bool verified[2][101] = {{false}}, s = true;
-		scanf(fin, "%d %d", &N, &M);
+		fscanf(fin, "%d %d", &N, &M);
 		for(i = 1; i <= N; i++) {
 			for(j = 1; j <= M; j++) {
 				fscanf(fin, "%d", &input[i][j]);
@@ -58,12 +64,12 @@ int main() {
 			q.pop();
 			if(!validate(input, p, verified)) {
 				s = false;
-				printf("Case #%d: No\n", ++caseno);
+				fprintf(fout, "Case #%d: No\n", ++caseno);
 				break;
 			}
 		}
 
 		if (s)
-			printf("Case #%d: Yes\n", ++caseno);
+			fprintf(fout, "Case #%d: Yes\n", ++caseno);
 	}
 }
