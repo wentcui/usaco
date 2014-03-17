@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <vector>
 #include <queue>
 
@@ -17,27 +18,31 @@ struct cmp {
 bool validate(int input[101][101], PP p, bool verified[2][101]) {
 	int i, x = p.first.first, y = p.first.second;
 	bool r1 = true, r2 = true;
-	printf("%d, %d: %d\n", p.first.first, p.first.second, p.second);
-	if (!verified[0][x]) {
+	
+	if (!verified[1][y]) {
 		for(i = 1; i <= N; i++)
 			if (input[i][y] > input[x][y]) {
 				r1 = false;
 				break;
 			}
-		verified[0][x] = true;
+		//printf("1, %d, %d: %d, %d\n", p.first.first, p.first.second, p.second, r1);
+		verified[1][y] = r1;
 	}
-	if (!verified[1][y]) {
+	if (!verified[0][x]) {
 		for(i = 1; i <= M; i++)
 			if (input[x][i] > input[x][y]) {
 				r2 = false;
 				break;
 			}
-		verified[1][y] = true;
+		//printf("0, %d, %d: %d, %d\n", p.first.first, p.first.second, p.second, r2);
+		verified[0][x] = r2;
 	}
+/*
 	if (r1 || r2)
 		printf("ret true\n");
 	else
 		printf("ret false\n");
+*/
 	return (r1 || r2);
 }
 
@@ -50,7 +55,9 @@ int main() {
 	fscanf(fin, "%d", &cases);
 	while(cases--) {
 		priority_queue<PP, vector<PP>, cmp> q;
-		bool verified[2][101] = {{false}}, s = true;
+		bool verified[2][101], s = true;
+		memset(verified[0], false, sizeof(bool) * 101);
+		memset(verified[1], false, sizeof(bool) * 101);
 		fscanf(fin, "%d %d", &N, &M);
 		for(i = 1; i <= N; i++) {
 			for(j = 1; j <= M; j++) {
@@ -64,12 +71,12 @@ int main() {
 			q.pop();
 			if(!validate(input, p, verified)) {
 				s = false;
-				fprintf(fout, "Case #%d: No\n", ++caseno);
+				fprintf(fout, "Case #%d: NO\n", ++caseno);
 				break;
 			}
 		}
 
 		if (s)
-			fprintf(fout, "Case #%d: Yes\n", ++caseno);
+			fprintf(fout, "Case #%d: YES\n", ++caseno);
 	}
 }
