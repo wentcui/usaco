@@ -3,76 +3,39 @@
 #include <string.h>
 
 #define MIN_V -1000000000
-#define MAX_V 1000000000
+
+int max(int a, int b) {
+	return a > b ? a : b;
+}
 
 int main() {
-	int cases, caseno = 0, N, input[101], dp[101][101];
-	int i, j, k, l, e;
-	int sum = 0, max, min, runningsum;
+	int cases, caseno = 0, N, input, dp[101][101], sum[101];
+	int i, j, k, e;
+	int max_v;
 	scanf("%d", &cases);
 	while(cases--) {
 		scanf("%d", &N);
-		sum = 0;
-		memset(input, 0, sizeof(int) * 101);
 		memset(dp, 0, sizeof(int) * 101);
+		memset(sum, 0, sizeof(int) * 101);
 
 		for(i = 1; i <= N; i++) {
-			scanf("%d", &input[i]);
-			dp[i][i] = input[i];
-			sum += input[i];
+			scanf("%d", &input);
+			dp[i][i] = input;
+			sum[i] = sum[i - 1] + input;
 		}
 		for(k = 2; k <= N; k++) {
 			for(i = 1; i <= N - k + 1; i++) {
 				e = i + k - 1;
-				max = MIN_V;
-				runningsum = 0;
+				//max_v = sum[e] - sum[i - 1];
+				max_v = MIN_V;
 				for(j = i; j <= e; j++) {
-					runningsum += input[j];
-					if (j == e) {
-						if (runningsum > max)
-							max = runningsum;
-						break;
-					}
-					min = MAX_V;
-					if (j + 1 == e)
-						min = 0;
-					for(l = j + 1; l <= e; l++) {
-						if (l < e && dp[j + 1][l] < min)
-							min = dp[j + 1][l];
-						if (l > j + 1 && dp[l][e] < min)
-							min = dp[l][e];
-					}
-					if (runningsum + min > max)
-						max = runningsum + min;
-					//printf("max: %d, min: %d\n", max, min);
+					max_v = max(max_v, sum[j] - sum[i - 1] - dp[j + 1][e]);
+					max_v = max(max_v, sum[e] - sum[j - 1] - dp[i][j - 1]);
 				}
-
-				runningsum = 0;
-				for(j = e; j >= i; j--) {
-					runningsum += input[j];
-					if (j == i) {
-						if (runningsum > max)
-							max = runningsum;
-						break;
-					}
-					min = MAX_V;
-					if (j - 1 == i)
-						min = 0;
-					for(l = j - 1; l >= i; l--) {
-						if (l < j - 1 && dp[i][l] < min)
-							min = dp[i][l];
-						if (l > i && dp[l][j - 1] < min)
-							min = dp[l][j - 1];
-					}
-					if (runningsum + min > max)
-						max = runningsum + min;
-					//printf("*max: %d, min: %d, j: %d, i: %d\n", max, min, j, i);
-				}
-				//printf("i: %d, e: %d, v: %d\n", i, e, max);
-				dp[i][e] = max;
+				dp[i][e] = max_v;
 			}
 		}
-		printf("Case %d: %d\n", ++caseno, 2 * dp[1][N] - sum);
+		printf("Case %d: %d\n", ++caseno, dp[1][N]);
 	}
 	return 0;
 }
