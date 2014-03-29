@@ -83,7 +83,7 @@ int main() {
 	int cases, caseno = 0, N, K, f, t;
 	scanf("%d", &cases);
 	while(cases--) {
-		bool v_map[1001] = {false}, have_zero = false, failed = false;
+		bool v_map[1001] = {false}, failed = false;
 		vector<int> graph[1001], vs;
 		memset(dfn, 0, sizeof(int) * 1001);
 		memset(low, 0, sizeof(int) * 1001);
@@ -95,8 +95,6 @@ int main() {
 			scanf("%d", &K);
 			for(int j = 1; j <= K; j++) {
 				scanf("%d %d", &f, &t);
-				if (!f)
-					have_zero = true;
 				graph[f].push_back(t);
 				if (!v_map[f]) {
 					v_map[f] = true;
@@ -107,10 +105,6 @@ int main() {
 					vs.push_back(t);
 				}
 			}
-		}
-		if (!have_zero) {
-			printf("Case %d: NO\n", ++caseno);
-			continue;
 		}
 		tarjan(graph, 0);
 		for(int i = 0; i < vs.size(); i++) {
