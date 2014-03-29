@@ -38,14 +38,26 @@ int shrink(vector<int> *graph, int n) {
 	vector<int> s_group[20001];
 	int vg, cg, next, in_degree[20001] = {0};
 	int in_c = 0, out_c = 0;
+	bool in_map[20001], out_map[20001];
+
+	in_c = out_c = group - 1;
 	for(int i = 1; i <= n; i++) {
 		cg = belong[i];
 		for(int j = 0; j < graph[i].size(); j++) {
 			vg = belong[graph[i][j]];
 			if (cg == vg)	continue;
 			s_group[cg].push_back(vg);
+			if (!in_map[vg]) {
+				in_c--;
+				in_map[vg] = true;
+			}
+			if (!out_map[cg]) {
+				out_c--;
+				out_map[cg] = true;
+			}
 		}
 	}
+	/*
 	out_c = group - 1;
 	for(int i = 1; i < group; i++) {
 		if (s_group[i].size() > 0)
@@ -56,7 +68,7 @@ int shrink(vector<int> *graph, int n) {
 	for(int i = 1; i < group; i++) {
 		if (!in_degree[i])
 			in_c++;
-	}
+	}*/
 	return out_c > in_c ? out_c : in_c;
 }
 
