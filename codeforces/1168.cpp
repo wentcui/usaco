@@ -43,7 +43,8 @@ bool shrink(vector<int> *graph, vector<int> vs) {
 		cg = belong[v];
 		for(int j = 0; j < graph[v].size(); j++) {
 			vg = belong[graph[v][j]];
-			if (e_map[cg][vg] || cg == vg)	continue;
+			if (cg == vg)	continue;
+			if (e_map[cg][vg])	return false;
 			e_map[cg][vg] = true;
 			s_group[cg].push_back(vg);
 		}
