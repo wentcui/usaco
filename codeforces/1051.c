@@ -12,23 +12,24 @@ int fun(char *str) {
 		dp2[1][1] = 1;
 	else
 		dp1[1][1] = dp2[1][1] = 1;
+
 	for(i = 2; i <= len; i++) {
-		for(j = 0; j <= 2; j++) {
-			if (dp1[i - 1][j]) {
-				if (str[i - 1] == '?' || str[i - 1] == 'A')	dp1[i][j + 1] = 1;
-				if (str[i - 1] == '?' || str[i - 1] == 'B')	dp2[i][1] = 1;
+		for(j = 1; j <= 3; j++) {
+			if (dp1[i - 1][j - 1]) {
+				if ('A' == str[i - 1] || '?' == str[i - 1])	dp1[i][j] = 1;
+				if ('B' == str[i - 1] || '?' == str[i - 1])	dp2[i][1] = 1;
 			}
 		}
-		for(j = 0; j <= 4; j++) {
-			if (dp2[i - 1][j]) {
-				if (str[i - 1] == '?' || str[i - 1] == 'B')	dp2[i][j + 1] = 1;
-				if (str[i - 1] == '?' || str[i - 1] == 'A')	dp1[i][1] = 1;
+		for(j = 1; j <= 5; j++) {
+			if (dp2[i - 1][j - 1]) {
+				if ('A' == str[i - 1] || '?' == str[i - 1])	dp1[i][1] = 1;
+				if ('B' == str[i - 1] || '?' == str[i - 1])	dp2[i][j] = 1;
 			}
 		}
 	}
 	bad = mix = good = 0;
-	for(i = 0; i <= 2; i++)	if (dp1[len][i])	good = 1;
-	for(i = 0; i <= 4; i++)	if (dp2[len][i])	good = 1;
+	for(i = 1; i <= 2; i++)	if (dp1[len][i])	good = 1;
+	for(i = 1; i <= 4; i++)	if (dp2[len][i])	good = 1;
 	for(i = 1; i <= len; i++) if (dp1[i][3] || dp2[i][5])	bad = 1;
 	if (good && bad)	return 1;
 	if (good)	return 0;
